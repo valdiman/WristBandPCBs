@@ -311,6 +311,311 @@ ggplot(WB.rot.2, aes(x = time.2*24, y = `PCB18+30`/PUF.mean.2[17])) +
 # Plot both 'stat' and 'dyn' sampling rates -------------------------------
 # Plots are shown in paper and SI
 # Combine plot
+# PCB 1
+WB$PCB1_comb <- WB.1$PCB1 / PUF.mean[1]
+WB.rot.2$PCB1_comb <- WB.rot.2$PCB1 / PUF.mean.2[1]
+
+# Combine data, padding shorter dataset with NA
+max_len <- max(nrow(WB), nrow(WB.rot.2))
+
+WB_padded <- data.frame(
+  time = c(WB$time, rep(NA, max_len - nrow(WB))),
+  PCB1_comb = c(WB$PCB1_comb, rep(NA, max_len - nrow(WB))),
+  group = rep("Static", max_len)
+)
+
+WB_rot_padded <- data.frame(
+  time = c(WB.rot$time, rep(NA, max_len - nrow(WB.rot.2))),
+  PCB1_comb = c(WB.rot.2$PCB1_comb, rep(NA, max_len - nrow(WB.rot.2))),
+  group = rep("Dynamic", max_len)
+)
+
+combined_data <- rbind(WB_padded, WB_rot_padded)
+
+slopes <- combined_data %>%
+  group_by(group) %>%
+  summarize(slope = coef(lm(PCB1_comb ~ 0 + time))[1] * 24) # times 24 to get [m3/d]
+
+# Plotting
+plot.1 <- ggplot(combined_data, aes(x = time, y = PCB1_comb,
+                                        color = group, fill = group)) +
+  geom_point(shape = 21, size = 6, color = "black") +
+  stat_smooth(data = subset(combined_data, group == "Static"), method = "lm",
+              se = FALSE, aes(group = group), formula = y ~ 0 + x,
+              fullrange = TRUE, color = "#00BFC4", show.legend = FALSE) +
+  annotate("text", x = 1, y = 5.5,
+           label = "Dynamic = NA (nonlinear uptake)",
+           hjust = 0, size = 8.3,
+           color = "black") +
+  annotate("text", x = 1, y = 5.0,
+           label = paste0("'Static' == ",
+                          round(slopes$slope[slopes$group == "Static"], 2),
+                          " ~ '(m'^3*'/d)'"), parse = TRUE, hjust = 0, size = 8.3,
+           color = "black") +
+  theme_bw() +
+  xlim(0, 125) +
+  ylim(0, 6) +
+  xlab(expression(bold("Deployment time (h)"))) +
+  ylab(expression(bold("Effective Volume PCB 1 (m"^"3"*")"))) +
+  theme(axis.text.y = element_text(face = "bold", size = 22),
+        axis.title.y = element_text(face = "bold", size = 24),
+        axis.text.x = element_text(face = "bold", size = 22),
+        axis.title.x = element_text(face = "bold", size = 24),
+        legend.title = element_blank(),
+        legend.text = element_text(size = 24),
+        aspect.ratio = 1.5)
+
+# See plot
+plot.1
+
+# Save plot
+ggsave("Output/Plots/Studies1_2/Study1/PCB1SamplingRates.png",
+       plot = plot.1, width = 8, height = 10, dpi = 1300)
+
+# PCB 4
+WB$PCB4_comb <- WB.1$PCB4 / PUF.mean[4]
+WB.rot.2$PCB4_comb <- WB.rot.2$PCB4 / PUF.mean.2[4]
+
+# Combine data, padding shorter dataset with NA
+max_len <- max(nrow(WB), nrow(WB.rot.2))
+
+WB_padded <- data.frame(
+  time = c(WB$time, rep(NA, max_len - nrow(WB))),
+  PCB4_comb = c(WB$PCB4_comb, rep(NA, max_len - nrow(WB))),
+  group = rep("Static", max_len)
+)
+
+WB_rot_padded <- data.frame(
+  time = c(WB.rot$time, rep(NA, max_len - nrow(WB.rot.2))),
+  PCB4_comb = c(WB.rot.2$PCB4_comb, rep(NA, max_len - nrow(WB.rot.2))),
+  group = rep("Dynamic", max_len)
+)
+
+combined_data <- rbind(WB_padded, WB_rot_padded)
+
+slopes <- combined_data %>%
+  group_by(group) %>%
+  summarize(slope = coef(lm(PCB4_comb ~ 0 + time))[1] * 24) # times 24 to get [m3/d]
+
+# Plotting
+plot.4 <- ggplot(combined_data, aes(x = time, y = PCB4_comb,
+                                        color = group, fill = group)) +
+  geom_point(shape = 21, size = 6, color = "black") +
+  stat_smooth(method = "lm", se = FALSE, aes(group = group),
+              formula = y ~ 0 + x, fullrange = TRUE) +
+  annotate("text", x = 1, y = 5.5,
+           label = paste0("'Dynamic' == ",
+                          round(slopes$slope[slopes$group == "Dynamic"], 2),
+                          " ~ '(m'^3*'/d)'"), parse = TRUE, hjust = 0, size = 10,
+           color = "black") +
+  annotate("text", x = 1, y = 5.0,
+           label = paste0("'Static' == ",
+                          round(slopes$slope[slopes$group == "Static"], 2),
+                          " ~ '(m'^3*'/d)'"), parse = TRUE, hjust = 0, size = 10,
+           color = "black") +
+  theme_bw() +
+  xlim(0, 125) +
+  ylim(0, 6) +
+  xlab(expression(bold("Deployment time (h)"))) +
+  ylab(expression(bold("Effective Volume PCB 4 (m"^"3"*")"))) +
+  theme(axis.text.y = element_text(face = "bold", size = 22),
+        axis.title.y = element_text(face = "bold", size = 24),
+        axis.text.x = element_text(face = "bold", size = 22),
+        axis.title.x = element_text(face = "bold", size = 24),
+        legend.title = element_blank(),
+        legend.text = element_text(size = 24),
+        aspect.ratio = 1.5)
+
+# See plot
+plot.4
+
+# Save plot
+ggsave("Output/Plots/Studies1_2/Study1/PCB4SamplingRates.png",
+       plot = plot.4, width = 8, height = 10, dpi = 1300)
+
+# PCB 6
+WB$PCB6_comb <- WB.1$PCB6 / PUF.mean[6]
+WB.rot.2$PCB6_comb <- WB.rot.2$PCB6 / PUF.mean.2[6]
+
+# Combine data, padding shorter dataset with NA
+max_len <- max(nrow(WB), nrow(WB.rot.2))
+
+WB_padded <- data.frame(
+  time = c(WB$time, rep(NA, max_len - nrow(WB))),
+  PCB6_comb = c(WB$PCB6_comb, rep(NA, max_len - nrow(WB))),
+  group = rep("Static", max_len)
+)
+
+WB_rot_padded <- data.frame(
+  time = c(WB.rot$time, rep(NA, max_len - nrow(WB.rot.2))),
+  PCB6_comb = c(WB.rot.2$PCB6_comb, rep(NA, max_len - nrow(WB.rot.2))),
+  group = rep("Dynamic", max_len)
+)
+
+combined_data <- rbind(WB_padded, WB_rot_padded)
+
+slopes <- combined_data %>%
+  group_by(group) %>%
+  summarize(slope = coef(lm(PCB6_comb ~ 0 + time))[1] * 24) # times 24 to get [m3/d]
+
+# Plotting
+plot.6 <- ggplot(combined_data, aes(x = time, y = PCB6_comb,
+                                    color = group, fill = group)) +
+  geom_point(shape = 21, size = 6, color = "black") +
+  stat_smooth(method = "lm", se = FALSE, aes(group = group),
+              formula = y ~ 0 + x, fullrange = TRUE) +
+  annotate("text", x = 1, y = 5.5,
+           label = paste0("'Dynamic' == ",
+                          round(slopes$slope[slopes$group == "Dynamic"], 2),
+                          " ~ '(m'^3*'/d)'"), parse = TRUE, hjust = 0, size = 10,
+           color = "black") +
+  annotate("text", x = 1, y = 5.0,
+           label = paste0("'Static' == ",
+                          round(slopes$slope[slopes$group == "Static"], 2),
+                          " ~ '(m'^3*'/d)'"), parse = TRUE, hjust = 0, size = 10,
+           color = "black") +
+  theme_bw() +
+  xlim(0, 125) +
+  ylim(0, 6) +
+  xlab(expression(bold("Deployment time (h)"))) +
+  ylab(expression(bold("Effective Volume PCB 6 (m"^"3"*")"))) +
+  theme(axis.text.y = element_text(face = "bold", size = 22),
+        axis.title.y = element_text(face = "bold", size = 24),
+        axis.text.x = element_text(face = "bold", size = 22),
+        axis.title.x = element_text(face = "bold", size = 24),
+        legend.title = element_blank(),
+        legend.text = element_text(size = 24),
+        aspect.ratio = 1.5)
+
+# See plot
+plot.6
+
+# Save plot
+ggsave("Output/Plots/Studies1_2/Study1/PCB6SamplingRates.png",
+       plot = plot.6, width = 8, height = 10, dpi = 1300)
+
+# PCB 8
+WB$PCB8_comb <- WB.1$PCB4 / PUF.mean[8]
+WB.rot.2$PCB8_comb <- WB.rot.2$PCB8 / PUF.mean.2[8]
+
+# Combine data, padding shorter dataset with NA
+max_len <- max(nrow(WB), nrow(WB.rot.2))
+
+WB_padded <- data.frame(
+  time = c(WB$time, rep(NA, max_len - nrow(WB))),
+  PCB8_comb = c(WB$PCB8_comb, rep(NA, max_len - nrow(WB))),
+  group = rep("Static", max_len)
+)
+
+WB_rot_padded <- data.frame(
+  time = c(WB.rot$time, rep(NA, max_len - nrow(WB.rot.2))),
+  PCB8_comb = c(WB.rot.2$PCB8_comb, rep(NA, max_len - nrow(WB.rot.2))),
+  group = rep("Dynamic", max_len)
+)
+
+combined_data <- rbind(WB_padded, WB_rot_padded)
+
+slopes <- combined_data %>%
+  group_by(group) %>%
+  summarize(slope = coef(lm(PCB8_comb ~ 0 + time))[1] * 24) # times 24 to get [m3/d]
+
+# Plotting
+plot.8 <- ggplot(combined_data, aes(x = time, y = PCB8_comb,
+                                    color = group, fill = group)) +
+  geom_point(shape = 21, size = 6, color = "black") +
+  stat_smooth(method = "lm", se = FALSE, aes(group = group),
+              formula = y ~ 0 + x, fullrange = TRUE) +
+  annotate("text", x = 1, y = 5.5,
+           label = paste0("'Dynamic' == ",
+                          round(slopes$slope[slopes$group == "Dynamic"], 2),
+                          " ~ '(m'^3*'/d)'"), parse = TRUE, hjust = 0, size = 10,
+           color = "black") +
+  annotate("text", x = 1, y = 5.0,
+           label = paste0("'Static' == ",
+                          round(slopes$slope[slopes$group == "Static"], 2),
+                          " ~ '(m'^3*'/d)'"), parse = TRUE, hjust = 0, size = 10,
+           color = "black") +
+  theme_bw() +
+  xlim(0, 125) +
+  ylim(0, 6) +
+  xlab(expression(bold("Deployment time (h)"))) +
+  ylab(expression(bold("Effective Volume PCB 8 (m"^"3"*")"))) +
+  theme(axis.text.y = element_text(face = "bold", size = 22),
+        axis.title.y = element_text(face = "bold", size = 24),
+        axis.text.x = element_text(face = "bold", size = 22),
+        axis.title.x = element_text(face = "bold", size = 24),
+        legend.title = element_blank(),
+        legend.text = element_text(size = 24),
+        aspect.ratio = 1.5)
+
+# See plot
+plot.8
+
+# Save plot
+ggsave("Output/Plots/Studies1_2/Study1/PCB8SamplingRates.png",
+       plot = plot.8, width = 8, height = 10, dpi = 1300)
+
+# PCB 10
+WB$PCB10_comb <- WB.1$PCB10 / PUF.mean[10]
+WB.rot.2$PCB10_comb <- WB.rot.2$PCB10 / PUF.mean.2[10]
+
+# Combine data, padding shorter dataset with NA
+max_len <- max(nrow(WB), nrow(WB.rot.2))
+
+WB_padded <- data.frame(
+  time = c(WB$time, rep(NA, max_len - nrow(WB))),
+  PCB10_comb = c(WB$PCB10_comb, rep(NA, max_len - nrow(WB))),
+  group = rep("Static", max_len)
+)
+
+WB_rot_padded <- data.frame(
+  time = c(WB.rot$time, rep(NA, max_len - nrow(WB.rot.2))),
+  PCB10_comb = c(WB.rot.2$PCB10_comb, rep(NA, max_len - nrow(WB.rot.2))),
+  group = rep("Dynamic", max_len)
+)
+
+combined_data <- rbind(WB_padded, WB_rot_padded)
+
+slopes <- combined_data %>%
+  group_by(group) %>%
+  summarize(slope = coef(lm(PCB10_comb ~ 0 + time))[1] * 24) # times 24 to get [m3/d]
+
+# Plotting
+plot.10 <- ggplot(combined_data, aes(x = time, y = PCB10_comb,
+                                    color = group, fill = group)) +
+  geom_point(shape = 21, size = 6, color = "black") +
+  stat_smooth(method = "lm", se = FALSE, aes(group = group),
+              formula = y ~ 0 + x, fullrange = TRUE) +
+  annotate("text", x = 1, y = 5.5,
+           label = paste0("'Dynamic' == ",
+                          round(slopes$slope[slopes$group == "Dynamic"], 2),
+                          " ~ '(m'^3*'/d)'"), parse = TRUE, hjust = 0, size = 10,
+           color = "black") +
+  annotate("text", x = 1, y = 5.0,
+           label = paste0("'Static' == ",
+                          round(slopes$slope[slopes$group == "Static"], 2),
+                          " ~ '(m'^3*'/d)'"), parse = TRUE, hjust = 0, size = 10,
+           color = "black") +
+  theme_bw() +
+  xlim(0, 125) +
+  ylim(0, 6) +
+  xlab(expression(bold("Deployment time (h)"))) +
+  ylab(expression(bold("Effective Volume PCB 10 (m"^"3"*")"))) +
+  theme(axis.text.y = element_text(face = "bold", size = 22),
+        axis.title.y = element_text(face = "bold", size = 24),
+        axis.text.x = element_text(face = "bold", size = 22),
+        axis.title.x = element_text(face = "bold", size = 24),
+        legend.title = element_blank(),
+        legend.text = element_text(size = 24),
+        aspect.ratio = 1.5)
+
+# See plot
+plot.10
+
+# Save plot
+ggsave("Output/Plots/Studies1_2/Study1/PCB10SamplingRates.png",
+       plot = plot.10, width = 8, height = 10, dpi = 1300)
+
 # PCB 18+30
 WB$PCB18.30_comb <- WB.1$`PCB18+30` / PUF.mean[17]
 WB.rot.2$PCB18.30_comb <- WB.rot.2$`PCB18+30` / PUF.mean.2[17]

@@ -714,10 +714,17 @@ ggsave("Output/Plots/Profiles/Study4/Barplot/prof_combined.OfficeV18_19VeffZoom.
        plot = p_prof_comb.2_subset, width = 10, height = 5, dpi = 500)
 
 # Create 3 plots
-p_prof_comb.2 <- ggplot(prof_combined.2, aes(x = congener,
+# Include cosine theta in the plot
+cos_labels.V18V19 <- data.frame(
+  Source = c("V18 full-day", "V19 full-day"),
+  label = c("Cos θ = 0.92", "Cos θ = 0.98"))
+
+p_prof_comb.2 <- ggplot(prof_combined.18_19, aes(x = congener,
                                              y = Conc, fill = Source)) +
   geom_bar(stat = "identity", width = 1, color = "black", linewidth = 0.2) +
   facet_wrap(~ Source, ncol = 1) +
+  geom_text(data = cos_labels.V18V19, aes(x = Inf, y = 0.13, label = label),
+            inherit.aes = FALSE, hjust = 1.1, size = 6, fontface = "bold") +
   scale_y_continuous( limits = c(0, 0.15), n.breaks = 3) +
   theme_bw() +
   ylab(expression(bold("Conc. Fraction " *Sigma*"PCB"))) +
@@ -750,7 +757,7 @@ ggsave("Output/Plots/Profiles/Study4/Barplot/prof_combined.fulldayV18_19Veff.png
 
 # Scatter 1:1 plot
 # Convert to wide format
-prof_wide <- prof_combined.2 %>%
+prof_wide <- prof_combined.18_19 %>%
   pivot_wider(names_from = Source, values_from = Conc)
 
 # Make a long-format for plotting multiple y-values against Air PCB

@@ -123,11 +123,18 @@ ggsave("Output/Plots/Profiles/Study3/Barplot/prof_combined.V4VeffZoom.png",
        plot = p_prof_comb.V4_subset, width = 10, height = 3, dpi = 500)
 
 # Bar plot all congeners
+# Include cos theta in the plot
+cos_labels.V4 <- data.frame(
+  Source = c("V4 nd", "V4 d"),
+  label = c("Cos θ = 0.95", "Cos θ = 0.93"))
+
 # Create 3 plots
 p_prof_comb.V4 <- ggplot(prof_combined.V4, aes(x = congener,
                                                y = Conc, fill = Source)) +
   geom_bar(stat = "identity", width = 1, color = "black", linewidth = 0.2) +
   facet_wrap(~ Source, ncol = 1) +
+  geom_text(data = cos_labels.V4, aes(x = Inf, y = 0.13, label = label),
+            inherit.aes = FALSE, hjust = 1.1, size = 6, fontface = "bold") +
   scale_y_continuous( limits = c(0, 0.15), n.breaks = 3) +
   theme_bw() +
   ylab(expression(bold("Conc. Fraction " *Sigma*"PCB"))) +
@@ -222,11 +229,19 @@ prof_combined.V5 <- prof.air.conc %>%
 
 # Plots
 # Bar plot all congeners
+# Include cos theta in the plot
+cos_labels.V5 <- data.frame(
+  Source = c("V5 nd", "V5 d"),
+  label = c("Cos θ = 0.99", "Cos θ = 0.99")
+)
+
 # Create 3 plots
 p_prof_comb.V5 <- ggplot(prof_combined.V5, aes(x = congener,
                                                y = Conc, fill = Source)) +
   geom_bar(stat = "identity", width = 1, color = "black", linewidth = 0.2) +
   facet_wrap(~ Source, ncol = 1) +
+  geom_text(data = cos_labels.V5, aes(x = Inf, y = 0.13, label = label),
+            inherit.aes = FALSE, hjust = 1.1, size = 6, fontface = "bold") +
   scale_y_continuous( limits = c(0, 0.15), n.breaks = 3) +
   theme_bw() +
   ylab(expression(bold("Conc. Fraction " *Sigma*"PCB"))) +
